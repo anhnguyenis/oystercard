@@ -20,6 +20,7 @@ MINBALANCE = 1
   end
 
   def touch_out
+    @entry_station = nil
     deduct(1)
     @status = false
   end
