@@ -31,18 +31,20 @@ describe Oystercard do
   it 'touches in if over minimum fare' do
     oyster = Oystercard.new
     oyster.topup(10)
-    expect(oyster.touch_in).to be(true)
+    expect { oyster.touch_in}.to change{ oyster.status }.from(false).to(true)
   end
 
   it 'touches out' do
     oyster = Oystercard.new
-    expect(oyster.touch_out).to be(false)
+    oyster.topup(10)
+    oyster.touch_in
+    expect { oyster.touch_out}.to change{ oyster.status }.from(true).to(false)
   end
 
   it 'knows it is in journey' do
      oyster = Oystercard.new
-      oyster.topup(10)
-      oyster.touch_in
+     oyster.topup(10)
+     oyster.touch_in
      expect(oyster.in_journey?).to be(true)
   end
 
