@@ -13,21 +13,24 @@ MINBALANCE = 1
     @balance += amount
   end
 
-  def deduct(fare)
-    @balance -= fare
-  end
-
   def touch_in
    fail "Balance must be over £#{MINBALANCE}" unless @balance > MINBALANCE
     @status = true
   end
 
   def touch_out
-    @balance -= 1
+    deduct(1)
     @status = false
   end
 
   def in_journey?
     @status
   end
+
+  private
+
+  def deduct(fare)
+    @balance -= fare
+  end
+
 end
