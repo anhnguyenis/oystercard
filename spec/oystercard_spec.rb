@@ -27,6 +27,13 @@ describe Oystercard do
     expect { oyster.touch_in}.to change{ oyster.status }.from(false).to(true)
   end
 
+  it 'remembers the last station' do
+    oyster = Oystercard.new
+    oyster.topup(10)
+    oyster.touch_in("Old Street")
+    expect(oyster.station).to eq "Old Street"
+  end
+
   it 'touches out' do
     oyster = Oystercard.new
     oyster.topup(10)
