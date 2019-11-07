@@ -20,37 +20,46 @@ describe Oystercard do
     expect { oyster.topup(amount) }.to raise_error "Over limit of £#{Oystercard::MAXBALANCE}"
   end
 
-
+  let(:station) {double :station}
   it 'touches in if over minimum fare' do
     oyster = Oystercard.new
     oyster.topup(10)
-    expect { oyster.touch_in}.to change{ oyster.status }.from(false).to(true)
+    expect { oyster.touch_in(station)}.to change{ oyster.status }.from(false).to(true)
   end
 
   it 'remembers the last station' do
     oyster = Oystercard.new
     oyster.topup(10)
-    oyster.touch_in("Old Street")
-    expect(oyster.station).to eq "Old Street"
+    oyster.touch_in(station)
+    expect(oyster.entry_station).to eq station
   end
 
-  it 'touches out' do
-    oyster = Oystercard.new
-    oyster.topup(10)
-    oyster.touch_in
-    expect { oyster.touch_out}.to change{ oyster.status }.from(true).to(false)
+  describe '#touch_out' do
+    it 'touches out' do
+      oyster = Oystercard.new
+      oyster.topup(10)
+      oyster.touch_in(station)
+      expect { oyster.touch_out}.to change{ oyster.status }.from(true).to(false)
+    end
+
+    it 'sets entry_station to nil on touch_out' do
+      oyster = Oystercard.new
+      oyster.topup(10)
+      oyster.touch_in(station)
+      expect { oyster.touch_out}.to change{ oyster.entry_station}.from(station).to(nil)
+    end
   end
 
   it 'knows it is in journey' do
      oyster = Oystercard.new
      oyster.topup(10)
-     oyster.touch_in
+     oyster.touch_in(station)
      expect(oyster.in_journey?).to be(true)
   end
 
   it 'raises an error if touched in below minimum fare' do
     oyster = Oystercard.new
-    expect { oyster.touch_in }.to raise_error "Balance must be over £#{Oystercard::MINBALANCE}"
+    expect { oyster.touch_in(station) }.to raise_error "Balance must be over £#{Oystercard::MINBALANCE}"
   end
 
  it 'reduces balance by minimum fare when touches out' do
@@ -58,4 +67,5 @@ describe Oystercard do
    oyster.topup(10)
    expect { oyster.touch_out }.to change { oyster.balance }.by(-1)
  end
+
 end

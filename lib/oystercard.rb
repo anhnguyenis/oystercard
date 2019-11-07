@@ -1,5 +1,5 @@
 class Oystercard
-attr_reader :balance, :status
+attr_reader :balance, :status, :entry_station
 MAXBALANCE = 90
 MINBALANCE = 1
 
@@ -13,8 +13,9 @@ MINBALANCE = 1
     @balance += amount
   end
 
-  def touch_in
+  def touch_in(station)
    fail "Balance must be over £#{MINBALANCE}" unless @balance > MINBALANCE
+   @entry_station = station
     @status = true
   end
 
