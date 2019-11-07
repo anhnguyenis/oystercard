@@ -18,12 +18,15 @@ MINBALANCE = 1
   end
 
   def touch_in
-   fail "Balance must be over £1" unless @balance > MINBALANCE
+   fail "Balance must be over £#{MINBALANCE}" unless @balance > MINBALANCE
     @status = true
   end
+
   def touch_out
+    @balance -= 1
     @status = false
   end
+
   def in_journey?
     @status
   end
