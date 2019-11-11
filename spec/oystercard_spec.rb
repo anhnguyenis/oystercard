@@ -21,10 +21,11 @@ describe Oystercard do
   end
 
   let(:station) {double :station}
+
   it 'touches in if over minimum fare' do
     oyster = Oystercard.new
     oyster.topup(10)
-    expect { oyster.touch_in(station)}.to change{ oyster.status }.from(false).to(true)
+    expect { oyster.touch_in(station)}.to change{ oyster.in_journey? }.from(false).to(true)
   end
 
   it 'remembers the last station' do
@@ -39,14 +40,22 @@ describe Oystercard do
       oyster = Oystercard.new
       oyster.topup(10)
       oyster.touch_in(station)
-      expect { oyster.touch_out}.to change{ oyster.status }.from(true).to(false)
+      expect { oyster.touch_out(station)}.to change{ oyster.in_journey? }.from(true).to(false)
     end
 
     it 'sets entry_station to nil on touch_out' do
       oyster = Oystercard.new
       oyster.topup(10)
       oyster.touch_in(station)
-      expect { oyster.touch_out}.to change{ oyster.entry_station}.from(station).to(nil)
+      expect { oyster.touch_out(station)}.to change{ oyster.entry_station}.from(station).to(nil)
+    end
+
+    it 'stores history' do
+      oyster = Oystercard.new
+      oyster.topup(10)
+      oyster.touch_in(station)
+      oyster.touch_out(station)
+      expect(oyster.journey_history).to eq([station,station])
     end
   end
 
@@ -65,7 +74,8 @@ describe Oystercard do
  it 'reduces balance by minimum fare when touches out' do
    oyster = Oystercard.new
    oyster.topup(10)
-   expect { oyster.touch_out }.to change { oyster.balance }.by(-1)
+   expect { oyster.touch_out(station) }.to change { oyster.balance }.by(-1)
  end
+
 
 end
